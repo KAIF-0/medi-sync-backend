@@ -24,10 +24,10 @@ model User {
 
   medicalRecords     MedicalRecord[]
   emergencyContacts  EmergencyContact[]
-  qrCodes            QRCode[]
-  AddressDetails     AddressDetails?
-  AadhaarDetails     AadhaarDetails?
-  MedicalInformation MedicalInformation?
+  qrCode             QRCode?
+  addressDetails     AddressDetails?
+  aadhaarDetails     AadhaarDetails?
+  medicalInformation MedicalInformation?
 }
 
 model MedicalInformation {
@@ -88,8 +88,9 @@ model MedicalRecord {
 
 model QRCode {
   id         String    @id @default(uuid())
-  userId     String
+  userId     String    @unique
   qrCodeData String
+  qrCodeUrl  String
   expiresAt  DateTime?
   createdAt  DateTime  @default(now())
 

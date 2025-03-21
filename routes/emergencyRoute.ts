@@ -1,5 +1,9 @@
 import { Hono } from "hono";
-import { emergencyContactSchema } from "../helpers/emergencySchema";
+import {
+  contactIdSchema,
+  emergencyContactSchema,
+  updatedContactSchema,
+} from "../helpers/emergencySchema";
 import { zValidator } from "@hono/zod-validator";
 import {
   addContact,
@@ -7,15 +11,31 @@ import {
   getContacts,
   updateContact,
 } from "../controllers/emergencyController";
+import { userIdSchema } from "../helpers/userSchema";
 
 export const emergencyInstance = new Hono();
 
 emergencyInstance.post(
-  "/addContacts",
+  "/addContact",
   zValidator("json", emergencyContactSchema),
   addContact
 );
 
-emergencyInstance.get("/getContacts/:userId", getContacts);
-emergencyInstance.put("/updateContact", updateContact);
-emergencyInstance.delete("/deleteContact/:contactId", deleteContact);
+emergencyInstance.get(
+  "/getContacts/:userId",
+  zValidator("param", userIdSchema),
+  getContacts
+);
+
+emergencyInstance.put(
+  "/updateContact/:contactId",
+  zValidator("param", contactIdSchema),
+  zValidator("json", updatedContactSchema),
+  updateContact
+);
+
+emergencyInstance.delete(
+  "/deleteContact/:contactId",
+  zValidator("param", contactIdSchema),
+  deleteContact
+);

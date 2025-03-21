@@ -4,8 +4,6 @@ import { hashAadhaar } from "../utils/aadhaarHash";
 import { HTTPException } from "hono/http-exception";
 
 export const registerUser = async (c: Context) => {
-  const data = c.req.valid("json");
-  // console.log(data);
   const {
     id,
     name,
@@ -16,7 +14,8 @@ export const registerUser = async (c: Context) => {
     addressDetails,
     aadhaarDetails,
     medicalInformation,
-  } = data;
+  } = c.req.valid("json");
+  // console.log(data);
 
   //hashing aadhaar number
   const aadhaarHash = await hashAadhaar(aadhaarDetails.aadhaarNumber);
@@ -60,10 +59,7 @@ export const registerUser = async (c: Context) => {
 };
 
 export const getUser = async (c: Context) => {
-  const userId = c.req.param("userId");
-  if (!userId) {
-    throw new HTTPException(400, { message: "User Id is required!" });
-  }
+  const { userId } = c.req.valid("param");
 
   //finding user by id
   const user = await prisma.user.findUnique({
@@ -71,11 +67,13 @@ export const getUser = async (c: Context) => {
       id: userId,
     },
     include: {
-      AddressDetails: true,
-      AadhaarDetails: true,
-      MedicalInformation: true,
+      addressDetails: true,
+      aadhaarDetails: true,
+      medicalInformation: true,
       medicalRecords: true,
-    },
+      qrCode: true,
+      emergencyContacts: true,
+    } as any,
   });
   if (!user) {
     throw new HTTPException(404, { message: "User not found!" });

@@ -38,3 +38,7 @@ export const userDetailsSchema = z.object({
     })
     .optional(),
 });
+
+export const userIdSchema = z.object({
+  userId: z.string().uuid(),
+});

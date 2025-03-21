@@ -9,3 +9,11 @@ export const medicalRecordSchema = z.object({
   description: z.string().optional(),
   isConfidential: z.boolean().default(false),
 });
+
+export const recordIdSchema = z.object({
+  recordId: z.string().uuid(),
+});
+
+export const updatedRecordSchema = z.object({
+  updatedName: z.string().min(1),
+});

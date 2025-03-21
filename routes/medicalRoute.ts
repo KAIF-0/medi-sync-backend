@@ -6,7 +6,12 @@ import {
   uploadRecord,
 } from "../controllers/medicalController";
 import { zValidator } from "@hono/zod-validator";
-import { medicalRecordSchema } from "../helpers/recordSchema";
+import {
+  medicalRecordSchema,
+  recordIdSchema,
+  updatedRecordSchema,
+} from "../helpers/recordSchema";
+import { userIdSchema } from "../helpers/userSchema";
 
 export const medicalInstance = new Hono();
 
@@ -16,6 +21,19 @@ medicalInstance.post(
   uploadRecord
 );
 
-medicalInstance.get("/getRecord/:userId", getRecords);
-medicalInstance.put("/renameRecord", renameRecord);
-medicalInstance.delete("/deleteRecord/:recordId", deleteRecord);
+medicalInstance.get(
+  "/getRecord/:userId",
+  zValidator("param", userIdSchema),
+  getRecords
+);
+medicalInstance.put(
+  "/renameRecord/:recordId",
+  zValidator("param", recordIdSchema),
+  zValidator("json", updatedRecordSchema),
+  renameRecord
+);
+medicalInstance.delete(
+  "/deleteRecord/:recordId",
+  zValidator("param", recordIdSchema),
+  deleteRecord
+);

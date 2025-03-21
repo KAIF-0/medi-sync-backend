@@ -5,12 +5,6 @@ import { prisma } from "../configs/prisma";
 import { HTTPException } from "hono/http-exception";
 
 export const uploadRecord = async (c: Context) => {
-  const data = c.req.valid("json");
-
-  //uploading file to cloudinary
-  const fileUrl = await uploadMedicalRecord();
-  console.log(data);
-
   const {
     userId,
     fileName,
@@ -19,7 +13,11 @@ export const uploadRecord = async (c: Context) => {
     visitDate,
     description,
     isConfidential,
-  } = data;
+  } = c.req.valid("json");
+
+  //uploading file to cloudinary
+  const fileUrl = await uploadMedicalRecord();
+  //   console.log(fileUrl);
 
   const record = await prisma.medicalRecord.create({
     data: {
@@ -46,7 +44,7 @@ export const uploadRecord = async (c: Context) => {
 };
 
 export const getRecords = async (c: Context) => {
-  const userId = c.req.param("userId");
+  const { userId } = c.req.valid("param");
   const records = await prisma.medicalRecord.findMany({
     where: {
       userId,
@@ -60,14 +58,10 @@ export const getRecords = async (c: Context) => {
 };
 
 export const renameRecord = async (c: Context) => {
-  const data = await c.req.json();
-  const { recordId, updatedName } = data;
+  const { recordId } = c.req.valid("param");
+  const { updatedName } = c.req.valid("json");
 
-  if (!recordId || !updatedName) {
-    throw new HTTPException(400, {
-      message: "Record Id and updated name are required!",
-    });
-  }
+  console.log(recordId, updatedName);
 
   const record = await prisma.medicalRecord.update({
     where: {
@@ -86,10 +80,7 @@ export const renameRecord = async (c: Context) => {
 };
 
 export const deleteRecord = async (c: Context) => {
-  const recordId = c.req.param("recordId");
-  if (!recordId) {
-    throw new HTTPException(400, { message: "Record Id is required!" });
-  }
+  const { recordId } = c.req.valid("param");
 
   const record = await prisma.medicalRecord.delete({
     where: {

@@ -5,9 +5,16 @@ import { userInstance } from "./routes/userRoute";
 import { qrInstance } from "./routes/qrRoute";
 import { medicalInstance } from "./routes/medicalRoute";
 import { logger } from "hono/logger";
+import { cors } from "hono/cors";
 
 const app = new Hono().basePath("/api");
 app.use(logger());
+app.use(
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 //routes
 app.route("/user", userInstance);
@@ -20,7 +27,7 @@ app.get("/", (c) => c.text("Hello Hono!"));
 //error handling
 app.onError((err, c) => {
   console.error(err.message);
-  //custom error 
+  //custom error
   if (err instanceof HTTPException) {
     return c.json(
       {
@@ -34,7 +41,7 @@ app.onError((err, c) => {
   return c.json(
     {
       success: false,
-      message: "Internal Server Error!",
+      message: "Something went wrong!",
       data: null,
     },
     500
