@@ -6,6 +6,7 @@ import { qrInstance } from "./routes/qrRoute";
 import { medicalInstance } from "./routes/medicalRoute";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
+import { verifyAuth } from "./middleware/verifyAuth";
 
 const app = new Hono().basePath("/api");
 app.use(logger());
@@ -15,6 +16,14 @@ app.use(
     allowMethods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+
+//middleware for protected routes
+app.use(async (c, next) => {
+  if (!c.req.path.match(/^\/api\/user\/[^/]+$/)) {
+    return await verifyAuth(c, next);
+  }
+  return await next();
+});
 
 //routes
 app.route("/user", userInstance);

@@ -17,7 +17,7 @@ export const medicalInstance = new Hono();
 
 medicalInstance.post(
   "/uploadRecord",
-  zValidator("json", medicalRecordSchema),
+  zValidator("form", medicalRecordSchema),
   uploadRecord
 );
 

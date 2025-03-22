@@ -1,26 +1,23 @@
+import { ID } from "appwrite";
+import { storage } from "../configs/appwrite";
 import cloudinary from "../configs/cloudinary";
 
-export const uploadQrCode = async (qrCodeBuffer: any): Promise<string> => {
+export const uploadQrCode = async (qrCode: File): Promise<string> => {
   try {
     //upload qr code to cloudinary with qrbuffer
-    const uploadResponse = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          { folder: "qr_codes", resource_type: "image" },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        )
-        .end(qrCodeBuffer);
-    });
+    const uploadResponse = await storage.createFile(
+      Bun.env.APPWRITE_QR_CODES_BUCKET_ID!,
+      ID.unique(),
+      qrCode
+    );
     if (!uploadResponse) {
       throw new Error("Failed to upload QR code");
     }
 
-    // console.log(uploadResponse?.secure_url);
+    const qrCodeUrl = `${Bun.env.APPWRITE_ENDPOINT}/storage/buckets/${Bun.env.APPWRITE_QR_CODES_BUCKET_ID}/files/${uploadResponse.$id}/view?project=${Bun.env.APPWRITE_PROJECT_ID}`;
+    console.log(qrCodeUrl);
 
-    return uploadResponse?.secure_url;
+    return qrCodeUrl;
   } catch (error) {
     throw new Error("Failed to upload QR code");
   }

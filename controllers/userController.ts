@@ -28,7 +28,7 @@ export const registerUser = async (c: Context) => {
       gender,
       phone,
       dateOfBirth: dateOfBirth,
-      AddressDetails: {
+      addressDetails: {
         create: {
           address: addressDetails.address,
           city: addressDetails.city,
@@ -36,12 +36,12 @@ export const registerUser = async (c: Context) => {
           pinCode: addressDetails.pinCode,
         },
       },
-      AadhaarDetails: {
+      aadhaarDetails: {
         create: {
           aadhaarHash: aadhaarHash,
         },
       },
-      MedicalInformation: {
+      medicalInformation: {
         create: {
           bloodGroup: medicalInformation.bloodGroup,
           allergies: medicalInformation.allergies,
@@ -73,7 +73,7 @@ export const getUser = async (c: Context) => {
       medicalRecords: true,
       qrCode: true,
       emergencyContacts: true,
-    } as any,
+    },
   });
   if (!user) {
     throw new HTTPException(404, { message: "User not found!" });

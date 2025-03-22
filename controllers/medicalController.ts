@@ -8,15 +8,18 @@ export const uploadRecord = async (c: Context) => {
   const {
     userId,
     fileName,
+    file,
     testType,
     hospitalName,
     visitDate,
     description,
     isConfidential,
-  } = c.req.valid("json");
+  } = c.req.valid("form");
+
+
 
   //uploading file to cloudinary
-  const fileUrl = await uploadMedicalRecord();
+  const fileUrl = await uploadMedicalRecord(userId, fileName, file);
   //   console.log(fileUrl);
 
   const record = await prisma.medicalRecord.create({

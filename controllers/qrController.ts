@@ -12,8 +12,15 @@ export const generateQR = async (c: Context) => {
 
   const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
 
+
+  //buffer to file
+  const blob = new Blob([qrCodeBuffer], { type: "image/png" });
+  const qrCode = new File([blob], `qrcode-${userId}-${Date.now()}.png`, {
+    type: "image/png",
+  });
+
   //upload qr code to cloudinary
-  const qrCodeCloudinaryUrl = await uploadQrCode(qrCodeBuffer);
+  const qrCodeCloudinaryUrl = await uploadQrCode(qrCode as File);
 
   const qrData = await prisma.qRCode.create({
     data: {
