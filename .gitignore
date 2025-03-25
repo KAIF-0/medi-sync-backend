@@ -33,6 +33,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Finder (MacOS) folder config
 .DS_Store
 
+# docker-compose file
+.docker-compose.yml
 
-docker-compose.yml
-
+# gitignore file
+.gitignore
