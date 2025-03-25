@@ -19,10 +19,11 @@ export const uploadMedicalRecord = async (
       throw new Error("Failed to upload record!");
     }
 
-    const recordUrl = `${Bun.env.APPWRITE_ENDPOINT}/storage/buckets/${Bun.env.APPWRITE_RECORD_PDFS_BUCKET_ID}/files/${uploadResponse.$id}/view?project=${Bun.env.APPWRITE_PROJECT_ID}`;
-    console.log(recordUrl);
 
-    return recordUrl;
+    const fileUrl = `${Bun.env.APPWRITE_ENDPOINT}/storage/buckets/${Bun.env.APPWRITE_RECORD_PDFS_BUCKET_ID}/files/${uploadResponse.$id}/view?project=${Bun.env.APPWRITE_PROJECT_ID}`;
+    // console.log(fileUrl);
+
+    return { fileUrl: fileUrl, fileType: uploadResponse?.mimeType };
   } catch (error) {
     throw new HTTPException(500, { message: "Failed to upload record!" });
   }

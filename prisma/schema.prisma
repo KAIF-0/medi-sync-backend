@@ -77,6 +77,7 @@ model MedicalRecord {
   id             String   @id @default(uuid())
   userId         String
   fileName       String
+  fileType       String
   testType       String
   hospitalName   String?
   visitDate      DateTime @default(now())

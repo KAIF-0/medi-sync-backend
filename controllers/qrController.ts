@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import { uploadQrCode } from "../utils/qrCodeUpload";
 import { prisma } from "../configs/prisma";
 import { HTTPException } from "hono/http-exception";
+import { Prisma } from "@prisma/client";
 
 export const generateQR = async (c: Context) => {
   const { userId } = c.req.valid("json");
@@ -11,7 +12,6 @@ export const generateQR = async (c: Context) => {
   const qrCodeData = `${Bun.env.FRONTEND_URL}/qr/${userId}`;
 
   const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
-
 
   //buffer to file
   const blob = new Blob([qrCodeBuffer], { type: "image/png" });
@@ -22,14 +22,20 @@ export const generateQR = async (c: Context) => {
   //upload qr code to cloudinary
   const qrCodeCloudinaryUrl = await uploadQrCode(qrCode as File);
 
-  const qrData = await prisma.qRCode.create({
-    data: {
-      qrCodeData: qrCodeBuffer.toString("base64"),
-      qrCodeUrl: qrCodeCloudinaryUrl,
-      expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      userId: userId,
-    } as any,
-  });
+  const qrData = await prisma.qRCode
+    .create({
+      data: {
+        qrCodeData: qrCodeBuffer.toString("base64"),
+        qrCodeUrl: qrCodeCloudinaryUrl,
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        userId: userId,
+      } as any,
+    })
+    .catch((err) => {
+      throw new HTTPException(500, {
+        message: `Failed to generate QR code!`,
+      });
+    });
 
   return c.json({
     success: true,

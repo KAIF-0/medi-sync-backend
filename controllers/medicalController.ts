@@ -16,28 +16,37 @@ export const uploadRecord = async (c: Context) => {
     isConfidential,
   } = c.req.valid("form");
 
-
-
   //uploading file to cloudinary
-  const fileUrl = await uploadMedicalRecord(userId, fileName, file);
-  //   console.log(fileUrl);
+  const { fileUrl, fileType } = await uploadMedicalRecord(
+    userId,
+    fileName,
+    file
+  );
+  // console.log(fileUrl, fileType);
 
-  const record = await prisma.medicalRecord.create({
-    data: {
-      fileName,
-      testType,
-      hospitalName,
-      visitDate,
-      fileUrl,
-      description,
-      isConfidential,
-      user: {
-        connect: {
-          id: userId,
+  const record = await prisma.medicalRecord
+    .create({
+      data: {
+        fileName,
+        fileType,
+        testType,
+        hospitalName,
+        visitDate,
+        fileUrl,
+        description,
+        isConfidential,
+        user: {
+          connect: {
+            id: userId,
+          },
         },
       },
-    },
-  });
+    })
+    .catch((err) => {
+      throw new HTTPException(500, {
+        message: "Failed to upload record!",
+      });
+    });
 
   return c.json({
     success: true,
@@ -66,14 +75,20 @@ export const renameRecord = async (c: Context) => {
 
   console.log(recordId, updatedName);
 
-  const record = await prisma.medicalRecord.update({
-    where: {
-      id: recordId,
-    },
-    data: {
-      fileName: updatedName,
-    },
-  });
+  const record = await prisma.medicalRecord
+    .update({
+      where: {
+        id: recordId,
+      },
+      data: {
+        fileName: updatedName,
+      },
+    })
+    .catch((err) => {
+      throw new HTTPException(500, {
+        message: "Failed to rename record!",
+      });
+    });
 
   return c.json({
     success: true,
@@ -85,11 +100,17 @@ export const renameRecord = async (c: Context) => {
 export const deleteRecord = async (c: Context) => {
   const { recordId } = c.req.valid("param");
 
-  const record = await prisma.medicalRecord.delete({
-    where: {
-      id: recordId,
-    },
-  });
+  const record = await prisma.medicalRecord
+    .delete({
+      where: {
+        id: recordId,
+      },
+    })
+    .catch((err) => {
+      throw new HTTPException(500, {
+        message: "Failed to delete record!",
+      });
+    });
 
   return c.json({
     success: true,

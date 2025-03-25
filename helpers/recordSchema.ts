@@ -5,10 +5,16 @@ export const medicalRecordSchema = z.object({
   fileName: z
     .string()
     .min(1, "File name is required")
-    .transform((name) => (name.endsWith(".pdf") ? name : `${name}.pdf`)),  //added .pdf at end
-  file: z.instanceof(File).refine((file) => file.type === "application/pdf", {
-    message: "File must be a PDF",
-  }),
+    .transform((name) => (name.endsWith(".pdf") ? name : `${name}.pdf`)), //added .pdf at end
+  file: z
+    .instanceof(File)
+    .refine(
+      (file) =>
+        file.type === "application/pdf" || file.type.startsWith("image/"),
+      {
+        message: "File must be a PDF or an image",
+      }
+    ),
   testType: z.string().min(1, "Test type is required"),
   hospitalName: z.string().optional(),
   visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {

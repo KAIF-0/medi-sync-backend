@@ -20,37 +20,43 @@ export const registerUser = async (c: Context) => {
   //hashing aadhaar number
   const aadhaarHash = await hashAadhaar(aadhaarDetails.aadhaarNumber);
 
-  const user = await prisma.user.create({
-    data: {
-      id,
-      name,
-      email,
-      gender,
-      phone,
-      dateOfBirth: dateOfBirth,
-      addressDetails: {
-        create: {
-          address: addressDetails.address,
-          city: addressDetails.city,
-          state: addressDetails.state,
-          pinCode: addressDetails.pinCode,
+  const user = await prisma.user
+    .create({
+      data: {
+        id,
+        name,
+        email,
+        gender,
+        phone,
+        dateOfBirth: dateOfBirth,
+        addressDetails: {
+          create: {
+            address: addressDetails.address,
+            city: addressDetails.city,
+            state: addressDetails.state,
+            pinCode: addressDetails.pinCode,
+          },
+        },
+        aadhaarDetails: {
+          create: {
+            aadhaarHash: aadhaarHash,
+          },
+        },
+        medicalInformation: {
+          create: {
+            bloodGroup: medicalInformation.bloodGroup,
+            allergies: medicalInformation.allergies,
+            chronicConditions: medicalInformation.chronicConditions,
+            currentMedications: medicalInformation.currentMedications,
+          },
         },
       },
-      aadhaarDetails: {
-        create: {
-          aadhaarHash: aadhaarHash,
-        },
-      },
-      medicalInformation: {
-        create: {
-          bloodGroup: medicalInformation.bloodGroup,
-          allergies: medicalInformation.allergies,
-          chronicConditions: medicalInformation.chronicConditions,
-          currentMedications: medicalInformation.currentMedications,
-        },
-      },
-    },
-  });
+    })
+    .catch((err) => {
+      throw new HTTPException(500, {
+        message: `Failed to register user!`,
+      });
+    });
   return c.json({
     success: true,
     message: "User registered successfully!",
