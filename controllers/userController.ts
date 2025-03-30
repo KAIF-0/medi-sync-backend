@@ -65,6 +65,7 @@ export const registerUser = async (c: Context) => {
   });
 };
 
+
 export const getUser = async (c: Context) => {
   const { userKey } = c.req.valid("param");
 
@@ -93,3 +94,5 @@ export const getUser = async (c: Context) => {
     data: user,
   });
 };
+
+

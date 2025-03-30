@@ -2,24 +2,18 @@ import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { decode, verify } from "hono/jwt";
 import { decryptKey } from "../utils/decryptKey";
+import { verifyToken } from "../configs/appwrite";
 
 export const verifyAuth = async (c: Context, next: () => Promise<void>) => {
   let token;
   try {
-    if (
-      c.req.header("authorization") &&
-      c.req.header("authorization")?.startsWith("Bearer")
-    ) {
-      token =
-        c.req.header("authorization")?.split(" ")[1] ||
-        c.req.header("authorization")?.slice(6);
-    }
+    token = c.req.header("Authorization")?.replace("Bearer ", "") ;
 
     if (!token) {
       throw new Error("Token not found!");
     }
 
-    const decoded = await decryptKey(token);
+    const decoded = await verifyToken(token);
 
     console.log(decoded);
     c.set("user", decoded);
