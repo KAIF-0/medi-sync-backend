@@ -43,6 +43,7 @@ export const uploadRecord = async (c: Context) => {
       },
     })
     .catch((err) => {
+      console.log(err);
       throw new HTTPException(500, {
         message: "Failed to upload record!",
       });
