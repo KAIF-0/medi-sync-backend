@@ -78,7 +78,7 @@ model MedicalRecord {
   userId         String
   fileName       String
   fileType       String
-  testType       String
+  testType       String?
   hospitalName   String?
   visitDate      DateTime @default(now())
   fileUrl        String

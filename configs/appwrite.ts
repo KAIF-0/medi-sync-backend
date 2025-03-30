@@ -15,18 +15,14 @@ export const verifyToken = async (token: string) => {
     const user = await account.getSession("current");
 
     return user.userId;
-
-
-
-    
   } catch (error) {
-    if (error instanceof  AppwriteException){
-        throw new Error(error.message);   
+    console.log(error);
+    if (error instanceof AppwriteException) {
+      throw new Error(error.message);
     }
-    if (error instanceof Error){
-        throw new Error(error.message
-        );
-        }
-    throw new Error("Failed to verify token!")
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Failed to verify token!");
   }
 };
