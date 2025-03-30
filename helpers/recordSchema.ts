@@ -15,7 +15,7 @@ export const medicalRecordSchema = z.object({
         message: "File must be a PDF or an image",
       }
     ),
-  testType: z.string().min(1, "Test type is required"),
+  testType: z.string().min(1, "Test type is required").optional(),
   hospitalName: z.string().optional(),
   visitDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format",
