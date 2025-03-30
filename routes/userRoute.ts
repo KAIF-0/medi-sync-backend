@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getUser, registerUser } from "../controllers/userController";
-import { userDetailsSchema, userIdSchema } from "../helpers/userSchema";
+import { userDetailsSchema, userIdSchema, userKeySchema } from "../helpers/userSchema";
 import { zValidator } from "@hono/zod-validator";
 
 export const userInstance = new Hono();
@@ -10,4 +10,4 @@ userInstance.post(
   zValidator("json", userDetailsSchema),
   registerUser
 );
-userInstance.get("/:userId", zValidator("param", userIdSchema), getUser);
+userInstance.get("/:userKey", zValidator("param", userKeySchema), getUser);

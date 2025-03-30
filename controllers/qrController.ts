@@ -4,12 +4,13 @@ import { uploadQrCode } from "../utils/qrCodeUpload";
 import { prisma } from "../configs/prisma";
 import { HTTPException } from "hono/http-exception";
 import { Prisma } from "@prisma/client";
+import { generateQrcCodeData } from "../utils/qrCodeData";
 
 export const generateQR = async (c: Context) => {
   const { userId } = c.req.valid("json");
 
   //generate qr code
-  const qrCodeData = `${Bun.env.FRONTEND_URL}/qr/${userId}`;
+  const qrCodeData = await generateQrcCodeData(userId);
 
   const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
 

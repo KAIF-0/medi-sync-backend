@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import { prisma } from "../configs/prisma";
 import { hashAadhaar } from "../utils/aadhaarHash";
 import { HTTPException } from "hono/http-exception";
+import { decryptKey } from "../utils/decryptKey";
 
 export const registerUser = async (c: Context) => {
   const {
@@ -65,13 +66,15 @@ export const registerUser = async (c: Context) => {
 };
 
 export const getUser = async (c: Context) => {
-  const { userId } = c.req.valid("param");
+  const { userKey } = c.req.valid("param");
+
+  const { userId } = await decryptKey(userKey);
 
   //finding user by id
   const user = await prisma.user.findUnique({
     where: {
       id: userId,
-    },
+    }as any,
     include: {
       addressDetails: true,
       aadhaarDetails: true,

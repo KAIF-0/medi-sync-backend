@@ -56,3 +56,7 @@ export const userDetailsSchema = z.object({
 export const userIdSchema = z.object({
   userId: z.string().min(1, "User ID is required"),
 });
+
+export const userKeySchema = z.object({
+  userKey: z.string().min(1, "User Key is required"),
+});

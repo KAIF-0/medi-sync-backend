@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { decode, verify } from "hono/jwt";
+import { decryptKey } from "../utils/decryptKey";
 
 export const verifyAuth = async (c: Context, next: () => Promise<void>) => {
   let token;
@@ -18,14 +19,7 @@ export const verifyAuth = async (c: Context, next: () => Promise<void>) => {
       throw new Error("Token not found!");
     }
 
-    const decoded = await verify(
-      token,
-      Bun.env.JWT_SECRET as string,
-      Bun.env.JWT_ALGORITHM as any
-    ).catch((err) => {
-      console.error(err.message);
-      throw new Error("Invalid token!");
-    });
+    const decoded = await decryptKey(token);
 
     console.log(decoded);
     c.set("user", decoded);
