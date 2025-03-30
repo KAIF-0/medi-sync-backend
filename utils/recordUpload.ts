@@ -10,15 +10,12 @@ export const uploadMedicalRecord = async (
   file: File
 ) => {
   try {
-    const uploadResponse = await storage.createFile(
-      Bun.env.APPWRITE_RECORD_PDFS_BUCKET_ID!,
-      ID.unique(),
-      file
-    );
-    if (!uploadResponse) {
-      throw new Error("Failed to upload record!");
-    }
-
+    const uploadResponse = await storage
+      .createFile(Bun.env.APPWRITE_RECORD_PDFS_BUCKET_ID!, ID.unique(), file)
+      .catch((err) => {
+        console.log(err);
+        throw new Error("Failed to upload record!");
+      });
 
     const fileUrl = `${Bun.env.APPWRITE_ENDPOINT}/storage/buckets/${Bun.env.APPWRITE_RECORD_PDFS_BUCKET_ID}/files/${uploadResponse.$id}/view?project=${Bun.env.APPWRITE_PROJECT_ID}`;
     // console.log(fileUrl);

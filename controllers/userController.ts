@@ -67,9 +67,7 @@ export const registerUser = async (c: Context) => {
 
 
 export const getUser = async (c: Context) => {
-  const { userKey } = c.req.valid("param");
-
-  const { userId } = await decryptKey(userKey);
+  const { userId } = c.req.valid("param");
 
   //finding user by id
   const user = await prisma.user.findUnique({

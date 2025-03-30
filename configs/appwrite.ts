@@ -27,6 +27,6 @@ export const verifyToken = async (token: string) => {
         throw new Error(error.message
         );
         }
-    throw new Error("Failed to verify token")
+    throw new Error("Failed to verify token!")
   }
 };
