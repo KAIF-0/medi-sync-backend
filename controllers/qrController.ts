@@ -10,7 +10,7 @@ export const generateQR = async (c: Context) => {
   const { userId } = c.req.valid("json");
 
   //generate qr code
-  const qrCodeData = await generateQrcCodeData(userId);
+  const qrCodeData = `${Bun.env.FRONTEND_URL}/qr/${userId}`;
 
   const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
 
