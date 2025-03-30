@@ -22,6 +22,7 @@ export const uploadMedicalRecord = async (
 
     return { fileUrl: fileUrl, fileType: uploadResponse?.mimeType };
   } catch (error) {
+    console.log(error);
     throw new HTTPException(500, { message: "Failed to upload record!" });
   }
 };
