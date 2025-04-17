@@ -5,7 +5,7 @@ export const generateQrcCodeData = async (userId: string) => {
   const encryptedKey = await sign(
     { userId },
     Bun.env.JWT_SECRET as string,
-    Bun.env.JWT_ALGORITHM as string
+    Bun.env.JWT_ALGORITHM as any
   );
 
   console.log(encryptedKey);
