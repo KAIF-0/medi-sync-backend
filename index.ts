@@ -7,6 +7,7 @@ import { medicalInstance } from "./routes/medicalRoute";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { verifyAuth } from "./middleware/verifyAuth";
+import { alertInstance } from "./routes/alertRoutes";
 
 const app = new Hono().basePath("/api");
 app.use(logger());
@@ -30,6 +31,7 @@ app.route("/user", userInstance);
 app.route("/qr", qrInstance);
 app.route("/medical", medicalInstance);
 app.route("/emergency", emergencyInstance);
+app.route("/alert", alertInstance);
 
 app.get("/", (c) => c.text("Hello Hono!"));
 

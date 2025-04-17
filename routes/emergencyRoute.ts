@@ -12,30 +12,61 @@ import {
   updateContact,
 } from "../controllers/emergencyController";
 import { userIdSchema } from "../helpers/userSchema";
+import { HTTPException } from "hono/http-exception";
 
 export const emergencyInstance = new Hono();
 
 emergencyInstance.post(
   "/addContact",
-  zValidator("json", emergencyContactSchema),
+  zValidator("json", emergencyContactSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   addContact
 );
 
 emergencyInstance.get(
   "/getContacts/:userId",
-  zValidator("param", userIdSchema),
+  zValidator("param", userIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   getContacts
 );
 
 emergencyInstance.put(
   "/updateContact/:contactId",
-  zValidator("param", contactIdSchema),
-  zValidator("json", updatedContactSchema),
+  zValidator("param", contactIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
+  zValidator("json", updatedContactSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   updateContact
 );
 
 emergencyInstance.delete(
   "/deleteContact/:contactId",
-  zValidator("param", contactIdSchema),
+  zValidator("param", contactIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   deleteContact
 );

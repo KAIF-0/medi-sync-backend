@@ -5,27 +5,26 @@ import { prisma } from "../configs/prisma";
 import { HTTPException } from "hono/http-exception";
 
 export const uploadRecord = async (c: Context) => {
-  const {
-    userId,
-    fileName,
-    file,
-    testType,
-    hospitalName,
-    visitDate,
-    description,
-    isConfidential,
-  } = c.req.valid("form");
+  try {
+    const {
+      userId,
+      fileName,
+      file,
+      testType,
+      hospitalName,
+      visitDate,
+      description,
+      isConfidential,
+    } = c.req.valid("form");
 
-  //uploading file to cloudinary
-  const { fileUrl, fileType } = await uploadMedicalRecord(
-    userId,
-    fileName,
-    file
-  );
-  // console.log(fileUrl, fileType);
+    //uploading file to cloudinary
+    const { fileUrl, fileType } = await uploadMedicalRecord(
+      userId,
+      fileName,
+      file
+    );
 
-  const record = await prisma.medicalRecord
-    .create({
+    const record = await prisma.medicalRecord.create({
       data: {
         fileName,
         fileType,
@@ -41,81 +40,87 @@ export const uploadRecord = async (c: Context) => {
           },
         },
       },
-    })
-    .catch((err) => {
-      console.log(err);
-      throw new HTTPException(500, {
-        message: "Failed to upload record!",
-      });
     });
 
-  return c.json({
-    success: true,
-    message: "Record uploaded successfully!",
-    data: record,
-  });
+    return c.json({
+      success: true,
+      message: "Record uploaded successfully!",
+      data: record,
+    });
+  } catch (err) {
+    throw new HTTPException(500, {
+      message:
+        err instanceof Error
+          ? err.message
+          : " Failed to upload medical record!",
+    });
+  }
 };
 
 export const getRecords = async (c: Context) => {
-  const { userId } = c.req.valid("param");
-  const records = await prisma.medicalRecord.findMany({
-    where: {
-      userId,
-    },
-  });
-  return c.json({
-    success: true,
-    message: "All records fetched successfully!",
-    data: records,
-  });
+  try {
+    const { userId } = c.req.valid("param");
+    const records = await prisma.medicalRecord.findMany({
+      where: {
+        userId,
+      },
+    });
+    return c.json({
+      success: true,
+      message: "All records fetched successfully!",
+      data: records,
+    });
+  } catch (err) {
+    throw new HTTPException(500, {
+      message: err instanceof Error ? err.message : " Failed to fetch records!",
+    });
+  }
 };
 
 export const renameRecord = async (c: Context) => {
-  const { recordId } = c.req.valid("param");
-  const { updatedName } = c.req.valid("json");
+  try {
+    const { recordId } = c.req.valid("param");
+    const { updatedName } = c.req.valid("json");
 
-  console.log(recordId, updatedName);
-
-  const record = await prisma.medicalRecord
-    .update({
+    const record = await prisma.medicalRecord.update({
       where: {
         id: recordId,
       },
       data: {
         fileName: updatedName,
       },
-    })
-    .catch((err) => {
-      throw new HTTPException(500, {
-        message: "Failed to rename record!",
-      });
     });
 
-  return c.json({
-    success: true,
-    message: "Record renamed successfully!",
-    data: record,
-  });
+    return c.json({
+      success: true,
+      message: "Record renamed successfully!",
+      data: record,
+    });
+  } catch (err) {
+    throw new HTTPException(500, {
+      message: err instanceof Error ? err.message : " Failed to rename record!",
+    });
+  }
 };
 
 export const deleteRecord = async (c: Context) => {
-  const { recordId } = c.req.valid("param");
+  try {
+    const { recordId } = c.req.valid("param");
 
-  const record = await prisma.medicalRecord
-    .delete({
+    const record = await prisma.medicalRecord.delete({
       where: {
         id: recordId,
       },
-    })
-    .catch((err) => {
-      throw new HTTPException(500, {
-        message: "Failed to delete record!",
-      });
     });
 
-  return c.json({
-    success: true,
-    message: "Record deleted successfully!",
-    data: record,
-  });
+    return c.json({
+      success: true,
+      message: "Record deleted successfully!",
+      data: record,
+    });
+  } catch (err) {
+    throw new HTTPException(500, {
+      message: err instanceof Error ? err.message : " Failed to delete record!",
+    });
+  }
 };

@@ -12,28 +12,55 @@ import {
   updatedRecordSchema,
 } from "../helpers/recordSchema";
 import { userIdSchema } from "../helpers/userSchema";
+import { HTTPException } from "hono/http-exception";
 
 export const medicalInstance = new Hono();
 
 medicalInstance.post(
   "/uploadRecord",
-  zValidator("form", medicalRecordSchema),
+  zValidator("form", medicalRecordSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, { message: result.error.message });
+    }
+  }),
   uploadRecord
 );
 
 medicalInstance.get(
   "/getRecord/:userId",
-  zValidator("param", userIdSchema),
+  zValidator("param", userIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, { message: result.error.message });
+    }
+  }),
   getRecords
 );
 medicalInstance.put(
   "/renameRecord/:recordId",
-  zValidator("param", recordIdSchema),
-  zValidator("json", updatedRecordSchema),
+  zValidator("param", recordIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
+  zValidator("json", updatedRecordSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   renameRecord
 );
 medicalInstance.delete(
   "/deleteRecord/:recordId",
-  zValidator("param", recordIdSchema),
+  zValidator("param", recordIdSchema, (result, c) => {
+    if (!result.success) {
+      throw new HTTPException(400, {
+        message: result?.error?.errors[0]?.message,
+      });
+    }
+  }),
   deleteRecord
 );

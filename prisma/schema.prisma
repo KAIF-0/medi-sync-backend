@@ -29,6 +29,7 @@ model User {
   addressDetails     AddressDetails?
   aadhaarDetails     AadhaarDetails?
   medicalInformation MedicalInformation?
+  Alert              Alert[]
 }
 
 model MedicalInformation {
@@ -95,6 +96,17 @@ model QRCode {
   qrCodeUrl  String
   expiresAt  DateTime?
   createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Alert {
+  id                String   @id @default(uuid())
+  userId            String
+  latitude          Float
+  longitude         Float
+  emergencyContacts String[] @default([])
+  createdAt         DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
